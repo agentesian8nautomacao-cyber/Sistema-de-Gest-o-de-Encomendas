@@ -1,23 +1,25 @@
 import { defineConfig } from "drizzle-kit";
 
-// Drizzle Kit usa MySQL por padrão para migrations
-// O código runtime (server/db.ts) pode usar SQLite ou MySQL baseado nas variáveis de ambiente
+// Detecta automaticamente o tipo de banco baseado na string de conexão
 const connectionString = process.env.DATABASE_URL;
 const localPath = process.env.DATABASE_LOCAL_PATH;
 
-// Se DATABASE_LOCAL_PATH estiver definido, pode usar SQLite
-// Caso contrário, usa MySQL
 if (!connectionString && !localPath) {
   throw new Error("DATABASE_URL ou DATABASE_LOCAL_PATH é necessário para executar comandos drizzle");
 }
 
-// Para migrations, usamos MySQL por padrão (schema atual é MySQL)
-// Para usar SQLite em migrations, seria necessário criar um schema SQLite separado
+// Detecta se é PostgreSQL (Supabase) ou MySQL baseado na URL
+const isPostgres = connectionString?.startsWith("postgresql://") || connectionString?.startsWith("postgres://");
+
+// Usa o schema apropriado baseado no tipo de banco
+const schemaPath = isPostgres ? "./drizzle/schema.pg.ts" : "./drizzle/schema.ts";
+const dialect = isPostgres ? "postgresql" : "mysql";
+
 export default defineConfig({
-  schema: "./drizzle/schema.ts",
+  schema: schemaPath,
   out: "./drizzle",
-  dialect: "mysql",
+  dialect: dialect as "postgresql" | "mysql",
   dbCredentials: {
-    url: connectionString || "mysql://localhost:3306/temp", // Fallback temporário se não houver DATABASE_URL
+    url: connectionString || "mysql://localhost:3306/temp",
   },
 });
