@@ -5,13 +5,20 @@ import { integer, pgEnum, pgTable, text, timestamp, varchar, boolean, serial } f
  * Core user table backing auth flow.
  * Extended with condominium association and role-based access control.
  */
+
+// Enums
+export const roleEnum = pgEnum("role", ["porteiro", "morador", "sindico", "admin"]);
+export const tipoEnum = pgEnum("tipo", ["carta", "pacote", "delivery"]);
+export const statusEnum = pgEnum("status", ["pendente", "retirada"]);
+export const tipoNotificacaoEnum = pgEnum("tipo_notificacao", ["nova_encomenda", "encomenda_retirada", "sistema"]);
+
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: pgEnum("role", ["porteiro", "morador", "sindico", "admin"]).default("morador").notNull(),
+  role: roleEnum("role").default("morador").notNull(),
   condominioId: integer("condominioId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
@@ -63,11 +70,11 @@ export const encomendas = pgTable("encomendas", {
   condominioId: integer("condominioId").notNull(),
   moradorId: integer("moradorId").notNull(),
   apartamento: varchar("apartamento", { length: 20 }).notNull(),
-  tipo: pgEnum("tipo", ["carta", "pacote", "delivery"]).notNull(),
+  tipo: tipoEnum("tipo").notNull(),
   fotoUrl: text("fotoUrl"), // URL da foto no S3
   fotoKey: text("fotoKey"), // Chave do arquivo no S3
   observacoes: text("observacoes"),
-  status: pgEnum("status", ["pendente", "retirada"]).default("pendente").notNull(),
+  status: statusEnum("status").default("pendente").notNull(),
   porteiroRegistroId: integer("porteiroRegistroId").notNull(), // ID do porteiro que registrou
   porteiroRegistroNome: varchar("porteiroRegistroNome", { length: 255 }), // Nome do porteiro (cache)
   dataHoraRegistro: timestamp("dataHoraRegistro").defaultNow().notNull(),
@@ -106,7 +113,7 @@ export const notificacoes = pgTable("notificacoes", {
   userId: integer("userId").notNull(), // Usuário que receberá a notificação
   moradorId: integer("moradorId"), // Morador relacionado (opcional)
   encomendaId: integer("encomendaId"), // Encomenda relacionada (opcional)
-  tipo: pgEnum("tipo", ["nova_encomenda", "encomenda_retirada", "sistema"]).notNull(),
+  tipo: tipoNotificacaoEnum("tipo").notNull(),
   titulo: varchar("titulo", { length: 255 }).notNull(),
   mensagem: text("mensagem").notNull(),
   lida: boolean("lida").default(false).notNull(),
