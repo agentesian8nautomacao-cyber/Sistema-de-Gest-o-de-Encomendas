@@ -4,16 +4,24 @@ Se você não encontrou "Connection string" ou "Connection pooling", siga estes 
 
 ## 📍 Localização no Painel Supabase
 
-### Método 1: Settings > Database (Mais Comum)
+### Método 1: Botão "Connect" (Mais Fácil)
+
+1. **Acesse o painel do Supabase**
+2. **No topo da página**, procure por um botão chamado **"Connect"** ou ícone de conexão
+3. **Clique no botão "Connect"**
+4. Uma janela/modal será aberta
+5. Procure pela seção **"Direct connection"** ou **"Connection string"**
+6. Você verá a string no formato: `postgresql://postgres:[PASSWORD]@db.[PROJECT].supabase.co:5432/postgres`
+
+### Método 2: Settings > Database
 
 1. **Acesse o painel do Supabase**
 2. **Clique em "Settings"** (Configurações) no menu lateral
 3. **Clique em "Database"** no submenu
-4. Procure por uma das seguintes seções:
+4. Procure por:
    - **"Connection string"** ou **"Connection string (URI)"**
-   - **"Connection pooling"**
-   - **"Connection info"** ou **"Database"**
-   - Às vezes está na seção **"Connection pooler"**
+   - **"Connection info"**
+   - Seção com informações de conexão
 
 ### Método 2: Project Settings > Database
 
